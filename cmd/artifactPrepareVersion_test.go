@@ -159,6 +159,9 @@ func (w *gitWorktreeMock) Commit(msg string, opts *git.CommitOptions) (plumbing.
 	w.commitOpts = opts
 	return w.commitHash, nil
 }
+func (w *gitWorktreeMock) Status() (git.Status, error) {
+	return nil, fmt.Errorf("the Status() method is not supported in the worktree mock")
+}
 
 func TestRunArtifactPrepareVersion(t *testing.T) {
 

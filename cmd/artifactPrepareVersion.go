@@ -36,6 +36,7 @@ type gitRepository interface {
 type gitWorktree interface {
 	Checkout(*git.CheckoutOptions) error
 	Commit(string, *git.CommitOptions) (plumbing.Hash, error)
+	Status() (git.Status, error)
 }
 
 func getGitWorktree(repository gitRepository) (gitWorktree, error) {
@@ -339,11 +340,15 @@ func pushChanges(config *artifactPrepareVersionOptions, newVersion string, repos
 }
 
 func addAndCommit(config *artifactPrepareVersionOptions, worktree gitWorktree, newVersion string, t time.Time) (plumbing.Hash, error) {
+	status, err := worktree.Status()
+	log.Entry().Infof("worktree status before commit: %v", status)
 	//maybe more options are required: https://github.com/go-git/go-git/blob/master/_examples/commit/main.go
 	commit, err := worktree.Commit(fmt.Sprintf("update version %v", newVersion), &git.CommitOptions{All: true, Author: &object.Signature{Name: config.CommitUserName, When: t}})
 	if err != nil {
 		return commit, errors.Wrap(err, "failed to commit new version")
 	}
+	status, err = worktree.Status()
+	log.Entry().Infof("worktree status after commit: %v", status)
 	return commit, nil
 }
 
