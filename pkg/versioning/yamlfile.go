@@ -2,6 +2,7 @@ package versioning
 
 import (
 	"fmt"
+	"github.com/SAP/jenkins-library/pkg/log"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -99,6 +100,8 @@ func (y *YAMLfile) SetVersion(version string) error {
 	if err != nil {
 		return errors.Wrapf(err, "failed to write file '%v'", y.path)
 	}
+
+	log.Entry().Infof("wrote yaml content to file '%s':\n%s\n", y.path, string(content))
 
 	return nil
 }
